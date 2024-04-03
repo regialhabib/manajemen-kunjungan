@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -33,14 +36,36 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+
+
+
+    public function authenticate(Request $request): RedirectResponse
     {
-        $this->middleware('guest')->except('logout');
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials, boolval($request->input('remember')))) {
+            $request->session()->regenerate();
+
+            session()->flash('success', 'You are logged in!');
+            return redirect('/home');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
-    protected function redirectTo()
+    public function logout(Request $request): RedirectResponse
     {
-        session()->flash('success', 'You are logged in!');
-        return $this->redirectTo;
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 }

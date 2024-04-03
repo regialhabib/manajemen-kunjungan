@@ -37,7 +37,7 @@
 
                                     <div class="form-group">
                                         <div class="custom-control custom-checkbox small">
-                                            <input type="checkbox" class="custom-control-input" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                            <input type="checkbox" class="custom-control-input" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} value="true">
                                             <label class="custom-control-label" for="remember">{{ __('Remember Me') }}</label>
                                         </div>
                                     </div>
